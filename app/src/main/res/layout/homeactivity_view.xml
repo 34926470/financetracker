@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Top Bar with app name -->
+    <TextView
+        android:id="@+id/app_name_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Finance Tracker"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:background="#3b5998"
+        android:gravity="center"
+        android:padding="16dp" />
+
+    <!-- Buttons LinearLayout (positioned at the bottom) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="117dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/budget_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit Budgets" />
+
+        <Button
+            android:id="@+id/expense_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Expense" />
+
+        <Button
+            android:id="@+id/income_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Income" />
+
+        <Button
+            android:id="@+id/summary_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show Summary" />
+    </LinearLayout>
+
+</RelativeLayout>
