@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="#FFFFFF"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/budget_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category: Example"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/budget_spent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spent: £0.00 / £0.00"
+        android:textSize="18sp"
+        android:textColor="#555555" />
+
+    <EditText
+        android:id="@+id/budget_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter new budget"
+        android:inputType="numberDecimal"
+        android:padding="8dp"
+        android:background="@drawable/edit_text_background" />
+
+    <Button
+        android:id="@+id/update_budget_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Budget"
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF" />
+</LinearLayout>

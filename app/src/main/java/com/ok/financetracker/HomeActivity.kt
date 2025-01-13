@@ -21,7 +21,7 @@ class HomeActivity : AppCompatActivity() {
         // Set click listeners for each button
         budgetButton.setOnClickListener {
             // Open the Budgets Activity
-            val intent = Intent(this@HomeActivity, BudgetsActivity::class.java)
+            val intent = Intent(this@HomeActivity, BudgetActivity::class.java)
             startActivity(intent)
         }
 

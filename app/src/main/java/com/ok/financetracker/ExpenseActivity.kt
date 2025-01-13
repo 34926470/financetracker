@@ -3,6 +3,7 @@ package com.ok.financetracker
 import android.app.DatePickerDialog
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,12 +24,15 @@ class ExpenseActivity : AppCompatActivity() {
     private lateinit var selectDateButton: Button
 
     private val expensesList = mutableListOf<Expense>()
-    private lateinit var expensesAdapter: ExpensesAdapter
+    private lateinit var expensesAdapter: ExpenseAdapter
 
     private lateinit var sharedPreferences: SharedPreferences
     private val expensesKey = "expenses_list_key"
+    private val budgetKey = "budget_list_key"
 
     private var selectedDate: String = ""
+
+    private val categoryBudgetList = mutableListOf<Budget>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,18 +50,20 @@ class ExpenseActivity : AppCompatActivity() {
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("expense_prefs", MODE_PRIVATE)
 
-        // Load saved expenses
+        // Load saved expenses and budgets
         loadExpenses()
+        loadBudgets()
 
         // Set up category spinner
-        val categories = arrayOf("Food", "Transport", "Entertainment", "Bills", "Other")
+        val categories = arrayOf("Food", "Transport", "Entertainment", "Bills")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpinner.adapter = spinnerAdapter
 
         // Set up RecyclerView
-        expensesAdapter = ExpensesAdapter(expensesList) { position ->
-            removeExpense(position)  }
+        expensesAdapter = ExpenseAdapter(expensesList) { position ->
+            removeExpense(position)
+        }
         expensesRecyclerView.layoutManager = LinearLayoutManager(this)
         expensesRecyclerView.adapter = expensesAdapter
 
@@ -100,10 +106,14 @@ class ExpenseActivity : AppCompatActivity() {
             // Add expense to list
             val expense = Expense(name, price, category, selectedDate)
             expensesList.add(expense)
-            expensesAdapter.notifyDataSetChanged()
+            expensesAdapter.notifyItemInserted(expensesList.size - 1)
 
-            // Save updated list of expenses
+            // Update budget after adding expense
+            updateCategoryBudget(category, price)
+
+            // Save updated list of expenses and budgets
             saveExpenses()
+            saveBudgets()
 
             // Clear input fields
             expenseNameInput.text.clear()
@@ -119,6 +129,7 @@ class ExpenseActivity : AppCompatActivity() {
         val gson = Gson()
         val expensesJson = gson.toJson(expensesList)
         sharedPreferences.edit().putString(expensesKey, expensesJson).apply()
+        Log.d("ExpenseActivity", "Saved Expenses: $expensesList")
     }
 
     // Function to load expenses from SharedPreferences
@@ -131,12 +142,65 @@ class ExpenseActivity : AppCompatActivity() {
             val savedExpenses: List<Expense> = gson.fromJson(expensesJson, type)
             expensesList.addAll(savedExpenses)
         }
+        Log.d("ExpenseActivity", "Loaded Expenses: $expensesList")
     }
 
-    // Remove an expense entry from the list
+    // Function to save budgets to SharedPreferences
+    private fun saveBudgets() {
+        val gson = Gson()
+        val budgetsJson = gson.toJson(categoryBudgetList)
+        sharedPreferences.edit().putString(budgetKey, budgetsJson).apply()
+        Log.d("ExpenseActivity", "Saved Budgets: $categoryBudgetList")
+    }
+
+    // Function to load budgets from SharedPreferences
+    private fun loadBudgets() {
+        val gson = Gson()
+        val budgetsJson = sharedPreferences.getString(budgetKey, null)
+
+        if (budgetsJson != null) {
+            val type = object : TypeToken<List<Budget>>() {}.type
+            val savedBudgets: List<Budget> = gson.fromJson(budgetsJson, type)
+            categoryBudgetList.clear()
+            categoryBudgetList.addAll(savedBudgets)
+        }
+        Log.d("ExpenseActivity", "Loaded Budgets: $categoryBudgetList")
+    }
+
+    // Update the amount spent for the selected category
+    private fun updateCategoryBudget(category: String, price: Double) {
+        val existingBudget = categoryBudgetList.find { it.category == category }
+
+        if (existingBudget != null) {
+            existingBudget.amountSpent += price
+            if (existingBudget.amountSpent > existingBudget.totalBudget) {
+                Toast.makeText(
+                    this,
+                    "Warning: Spending for $category exceeds the budget!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            Log.d("ExpenseActivity", "Updated budget for $category: £${existingBudget.amountSpent}")
+        } else {
+            val newBudget = Budget(category, 0.0, price)
+            categoryBudgetList.add(newBudget)
+            Log.d("ExpenseActivity", "Created new budget for $category with amount: £$price")
+        }
+    }
+
+    // Remove an expense entry from the list and update budget
     private fun removeExpense(position: Int) {
+        val expense = expensesList[position]
         expensesList.removeAt(position)
-        expensesAdapter.notifyDataSetChanged()
+        expensesAdapter.notifyItemRemoved(position)
+
+        val categoryBudget = categoryBudgetList.find { it.category == expense.category }
+        categoryBudget?.let {
+            it.amountSpent -= expense.price
+            Log.d("ExpenseActivity", "Removed expense from ${expense.category}. Updated amountSpent: £${it.amountSpent}")
+        }
+
         saveExpenses()
+        saveBudgets()
     }
 }

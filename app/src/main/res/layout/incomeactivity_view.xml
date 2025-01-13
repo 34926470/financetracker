@@ -1,7 +1,84 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:padding="16dp">
 
-</LinearLayout>
+    <!-- Input fields for income name -->
+    <EditText
+        android:id="@+id/income_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Income Name"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        android:background="@drawable/edit_text_background" />
+
+    <!-- Input field for income amount -->
+    <EditText
+        android:id="@+id/income_amount_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Income Amount"
+        android:inputType="numberDecimal"
+        android:layout_below="@id/income_name_input"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:background="@drawable/edit_text_background" />
+
+    <!-- Dropdown for category selection -->
+    <Spinner
+        android:id="@+id/category_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/income_amount_input"
+        android:layout_marginTop="8dp"
+        android:padding="8dp" />
+
+    <!-- Date selection TextView -->
+    <TextView
+        android:id="@+id/income_date_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Date"
+        android:layout_below="@id/category_spinner"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="#000000" />
+
+    <!-- Button to open date picker -->
+    <Button
+        android:id="@+id/select_date_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pick Date"
+        android:layout_below="@id/income_date_input"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF" />
+
+    <!-- Submit button -->
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Income"
+        android:layout_below="@id/select_date_button"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF" />
+
+    <!-- RecyclerView for displaying incomes -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/incomes_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/submit_button"
+        android:layout_marginTop="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_weight="1"
+        android:background="#F5F5F5"/>
+
+</RelativeLayout>
