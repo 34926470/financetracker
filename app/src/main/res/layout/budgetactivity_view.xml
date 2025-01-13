@@ -1,12 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- RecyclerView for displaying budgets -->
+    <!-- Spinner for selecting month -->
+    <Spinner
+        android:id="@+id/month_spinner"
+        android:layout_width="383dp"
+        android:layout_height="34dp" />
+
+    <!-- Spinner for selecting year -->
+    <Spinner
+        android:id="@+id/year_spinner"
+        android:layout_width="383dp"
+        android:layout_height="42dp"
+        android:layout_below="@id/month_spinner" />
+
+    <!-- RecyclerView for budgets -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/budget_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F5F5F5" />
+        android:layout_below="@id/year_spinner" />
+
 </RelativeLayout>
+

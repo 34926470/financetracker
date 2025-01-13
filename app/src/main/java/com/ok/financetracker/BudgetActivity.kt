@@ -1,76 +1,159 @@
 package com.ok.financetracker
 
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
-import android.widget.*
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.util.Calendar
 
 class BudgetActivity : AppCompatActivity() {
 
     private lateinit var budgetRecyclerView: RecyclerView
-    private lateinit var budgetAdapter: BudgetAdapter
-    private lateinit var sharedPreferences: SharedPreferences
-    private val budgetKey = "budget_list_key"
+    private lateinit var monthSpinner: Spinner
+    private lateinit var yearSpinner: Spinner
 
+    private val expensesList = mutableListOf<Expense>()
     private val categoryBudgetList = mutableListOf<Budget>()
+    private lateinit var budgetAdapter: BudgetAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.budgetactivity_view)
 
-        // Initialize RecyclerView
+        // Initialize views
         budgetRecyclerView = findViewById(R.id.budget_recycler_view)
-        budgetAdapter = BudgetAdapter(categoryBudgetList) { category, newBudget ->
-            updateCategoryBudget(category, newBudget)
+        monthSpinner = findViewById(R.id.month_spinner)
+        yearSpinner = findViewById(R.id.year_spinner)
+
+        // Load data from SharedPreferences
+        loadExpenses()
+        loadBudgets()
+
+        // Set up RecyclerView
+        budgetAdapter = BudgetAdapter(categoryBudgetList) { category, amountSpent ->
+            updateBudget(category, amountSpent)
         }
         budgetRecyclerView.layoutManager = LinearLayoutManager(this)
         budgetRecyclerView.adapter = budgetAdapter
 
-        // Initialize SharedPreferences
-        sharedPreferences = getSharedPreferences("expense_prefs", MODE_PRIVATE)
+        // Set up the month spinner
+        val months = arrayOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+        val monthAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, months)
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        monthSpinner.adapter = monthAdapter
 
-        // Load saved budgets
-        loadBudgets()
+        // Set up the year spinner
+        val years = getAvailableYears()
+        val yearAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, years)
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        yearSpinner.adapter = yearAdapter
 
-        // Notify adapter
-        budgetAdapter.notifyDataSetChanged()
-    }
+        // Set up listeners for both spinners
+        monthSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View?, position: Int, id: Long) {
+                filterDataByMonthAndYear()
+            }
 
-    // Function to load budgets from SharedPreferences
-    private fun loadBudgets() {
-        val gson = Gson()
-        val budgetsJson = sharedPreferences.getString(budgetKey, null)
-
-        if (budgetsJson != null) {
-            val type = object : TypeToken<List<Budget>>() {}.type
-            val savedBudgets: List<Budget> = gson.fromJson(budgetsJson, type)
-            categoryBudgetList.clear()
-            categoryBudgetList.addAll(savedBudgets)
+            override fun onNothingSelected(parentView: AdapterView<*>) {}
         }
 
-        Log.d("BudgetActivity", "Loaded Budgets: $categoryBudgetList")
+        yearSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View?, position: Int, id: Long) {
+                filterDataByMonthAndYear()
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>) {}
+        }
+
+        // Initially display all data
+        filterDataByMonthAndYear()
     }
 
-    // Function to save budgets to SharedPreferences
+    private fun updateBudget(category: String, amountSpent: Double) {
+        val index = categoryBudgetList.indexOfFirst { it.category == category }
+        if (index != -1) {
+            val updatedBudget = categoryBudgetList[index]
+            updatedBudget.amountSpent = amountSpent
+            categoryBudgetList[index] = updatedBudget
+            saveBudgets()
+            budgetAdapter.notifyItemChanged(index)
+        }
+    }
+
+    private fun loadExpenses() {
+        val gson = Gson()
+        val expensesJson = getSharedPreferences("expense_prefs", MODE_PRIVATE)
+            .getString("expenses_list_key", null)
+        if (expensesJson != null) {
+            val type = object : TypeToken<List<Expense>>() {}.type
+            expensesList.clear() // Clear existing list to avoid duplicates
+            expensesList.addAll(gson.fromJson(expensesJson, type))
+        }
+    }
+
+    private fun loadBudgets() {
+        val gson = Gson()
+        val budgetsJson = getSharedPreferences("expense_prefs", MODE_PRIVATE)
+            .getString("budget_list_key", null)
+        if (budgetsJson != null) {
+            val type = object : TypeToken<List<Budget>>() {}.type
+            categoryBudgetList.clear() // Clear existing budgets
+            categoryBudgetList.addAll(gson.fromJson(budgetsJson, type))
+        }
+    }
+
     private fun saveBudgets() {
         val gson = Gson()
         val budgetsJson = gson.toJson(categoryBudgetList)
-        sharedPreferences.edit().putString(budgetKey, budgetsJson).apply()
-        Log.d("BudgetActivity", "Saved Budgets: $categoryBudgetList")
+        getSharedPreferences("expense_prefs", MODE_PRIVATE)
+            .edit()
+            .putString("budget_list_key", budgetsJson)
+            .apply()
     }
 
-    // Update the total budget for a category
-    private fun updateCategoryBudget(category: String, newBudget: Double) {
-        val budget = categoryBudgetList.find { it.category == category }
-        budget?.let {
-            it.totalBudget = newBudget
-            saveBudgets()
-            Toast.makeText(this, "Budget updated for $category", Toast.LENGTH_SHORT).show()
+    private fun filterDataByMonthAndYear() {
+        val selectedMonthPosition = monthSpinner.selectedItemPosition
+        val selectedYear = yearSpinner.selectedItem.toString()
+
+        val filteredExpenses = if (selectedMonthPosition == 0) {
+            expensesList
+        } else {
+            expensesList.filter { expense ->
+                val expenseMonth = expense.date.split("-")[1].toInt()
+                expenseMonth == selectedMonthPosition
+            }
         }
+
+        val filteredByYearExpenses = filteredExpenses.filter { expense ->
+            val expenseYear = expense.date.split("-")[0].toInt()
+            expenseYear == selectedYear.toInt()
+        }
+
+        // Update the budget list based on filtered expenses
+        categoryBudgetList.forEach { budget ->
+            val totalSpent = filteredByYearExpenses.filter { it.category == budget.category }
+                .sumOf { it.price }
+            budget.amountSpent = totalSpent
+        }
+
+        // Notify the adapter about the data change
+        budgetAdapter.notifyDataSetChanged()
+    }
+
+    private fun getAvailableYears(): List<String> {
+        val allYears = mutableSetOf<String>()
+
+        // Add years from expenses data
+        expensesList.forEach {
+            allYears.add(it.date.split("-")[0])
+        }
+
+        return allYears.sorted().toList()
     }
 }

@@ -57,7 +57,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("com.google.code.gson:gson:2.8.8")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-
+    implementation(libs.gson)
+    implementation(libs.androidx.constraintlayout)
 }
