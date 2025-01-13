@@ -53,7 +53,7 @@ class ExpenseActivity : AppCompatActivity() {
         selectDateButton = findViewById(R.id.select_date_button)
 
         // Initialize SharedPreferences for saving and loading data
-        sharedPreferences = getSharedPreferences("expense_prefs", MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("finance_prefs", MODE_PRIVATE)
 
         // Load saved expenses and budgets from SharedPreferences
         loadExpenses()

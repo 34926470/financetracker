@@ -1,6 +1,7 @@
 package com.ok.financetracker
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -25,6 +26,8 @@ class BudgetActivity : AppCompatActivity() {
     private val categoryBudgetList = mutableListOf<Budget>()
     private lateinit var budgetAdapter: BudgetAdapter
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.budgetactivity_view)
@@ -33,6 +36,9 @@ class BudgetActivity : AppCompatActivity() {
         budgetRecyclerView = findViewById(R.id.budget_recycler_view)
         monthSpinner = findViewById(R.id.month_spinner)
         yearSpinner = findViewById(R.id.year_spinner)
+
+        // Initialize SharedPreferences for saving and loading data
+        sharedPreferences = getSharedPreferences("finance_prefs", MODE_PRIVATE)
 
         // Load saved data (expenses and budgets) from SharedPreferences
         loadExpenses()
@@ -82,21 +88,22 @@ class BudgetActivity : AppCompatActivity() {
     }
 
     // Function to update the budget when an amount is spent in a specific category
-    private fun updateBudget(category: String, amountSpent: Double) {
+    private fun updateBudget(category: String, budgetedAmount: Double) {
         val index = categoryBudgetList.indexOfFirst { it.category == category }
         if (index != -1) {
             val updatedBudget = categoryBudgetList[index]
-            updatedBudget.amountSpent = amountSpent
+            updatedBudget.totalBudget = budgetedAmount  // Update the budgeted amount, not amount spent
             categoryBudgetList[index] = updatedBudget
             saveBudgets()  // Save updated budget data
             budgetAdapter.notifyItemChanged(index)  // Notify the adapter about the change
         }
     }
 
+
     // Load expenses from SharedPreferences using Gson to deserialize JSON data
     private fun loadExpenses() {
         val gson = Gson()
-        val expensesJson = getSharedPreferences("expense_prefs", MODE_PRIVATE)
+        val expensesJson = getSharedPreferences("finance_prefs", MODE_PRIVATE)
             .getString("expenses_list_key", null)
         if (expensesJson != null) {
             val type = object : TypeToken<List<Expense>>() {}.type
@@ -108,7 +115,7 @@ class BudgetActivity : AppCompatActivity() {
     // Load budget data from SharedPreferences using Gson
     private fun loadBudgets() {
         val gson = Gson()
-        val budgetsJson = getSharedPreferences("expense_prefs", MODE_PRIVATE)
+        val budgetsJson = getSharedPreferences("finance_prefs", MODE_PRIVATE)
             .getString("budget_list_key", null)
         if (budgetsJson != null) {
             val type = object : TypeToken<List<Budget>>() {}.type
@@ -121,7 +128,7 @@ class BudgetActivity : AppCompatActivity() {
     private fun saveBudgets() {
         val gson = Gson()
         val budgetsJson = gson.toJson(categoryBudgetList)
-        getSharedPreferences("expense_prefs", MODE_PRIVATE)
+        getSharedPreferences("finance_prefs", MODE_PRIVATE)
             .edit()
             .putString("budget_list_key", budgetsJson)
             .apply()

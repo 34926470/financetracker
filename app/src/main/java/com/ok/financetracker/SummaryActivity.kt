@@ -3,6 +3,7 @@ package com.ok.financetracker
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -41,7 +42,8 @@ class SummaryActivity : AppCompatActivity() {
         netBalanceTextView = findViewById(R.id.net_balance_text_view)
 
         // Initialize SharedPreferences
-        sharedPreferences = getSharedPreferences("expense_prefs", MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("finance_prefs", MODE_PRIVATE)
+
 
         // Load saved expenses and income data from SharedPreferences
         loadExpenses()
@@ -83,16 +85,17 @@ class SummaryActivity : AppCompatActivity() {
     }
 
     // Function to load expenses from SharedPreferences
+    // Load expenses list from SharedPreferences
     private fun loadExpenses() {
         val gson = Gson()
         val expensesJson = sharedPreferences.getString(expensesKey, null)
 
         if (expensesJson != null) {
-            // Deserialize the expenses JSON string into a list of Expense objects
             val type = object : TypeToken<List<Expense>>() {}.type
             val savedExpenses: List<Expense> = gson.fromJson(expensesJson, type)
             expensesList.addAll(savedExpenses)
         }
+        Log.d("SummaryActivity", "Loaded Expenses: $expensesList")
     }
 
     // Function to load income from SharedPreferences
@@ -115,48 +118,50 @@ class SummaryActivity : AppCompatActivity() {
         val selectedMonthPosition = monthSpinner.selectedItemPosition
         val selectedYear = yearSpinner.selectedItem.toString()
 
-        // Filter expenses based on the selected month
-        val filteredExpenses = if (selectedMonthPosition == 0) {
-            expensesList // "All" months selected, no filtering
-        } else {
-            expensesList.filter { expense ->
-                // Extract the month from the expense date and compare
-                val expenseMonth = expense.date.split("-")[1].toInt()
-                expenseMonth == selectedMonthPosition
-            }
-        }
-
         // Filter income based on the selected month
         val filteredIncome = if (selectedMonthPosition == 0) {
             incomeList // "All" months selected, no filtering
         } else {
             incomeList.filter { income ->
-                // Extract the month from the income date and compare
                 val incomeMonth = income.date.split("-")[1].toInt()
                 incomeMonth == selectedMonthPosition
             }
         }
 
-        // Filter by the selected year
-        val filteredByYearExpenses = filteredExpenses.filter { expense ->
-            val expenseYear = expense.date.split("-")[0].toInt()
-            expenseYear == selectedYear.toInt()
-        }
-
+        // Filter income by the selected year
         val filteredByYearIncome = filteredIncome.filter { income ->
             val incomeYear = income.date.split("-")[0].toInt()
             incomeYear == selectedYear.toInt()
         }
 
-        // Calculate totals for the filtered data
-        val totalExpenses = filteredByYearExpenses.sumOf { it.price }
+        // Calculate totals for filtered data
         val totalIncome = filteredByYearIncome.sumOf { it.amount }
 
-        // Display totals on the screen
+        // Display totals
         totalIncomeTextView.text = "Total Income: £${"%.2f".format(totalIncome)}"
+
+        // Filter expenses the same way
+        val filteredExpenses = if (selectedMonthPosition == 0) {
+            expensesList
+        } else {
+            expensesList.filter { expense ->
+                val expenseMonth = expense.date.split("-")[1].toInt()
+                expenseMonth == selectedMonthPosition
+            }
+        }
+
+        val filteredByYearExpenses = filteredExpenses.filter { expense ->
+            val expenseYear = expense.date.split("-")[0].toInt()
+            expenseYear == selectedYear.toInt()
+        }
+
+        // Calculate total expenses
+        val totalExpenses = filteredByYearExpenses.sumOf { it.price }
+
+        // Display total expenses
         totalExpensesTextView.text = "Total Expenses: £${"%.2f".format(totalExpenses)}"
 
-        // Calculate and display net balance (Income - Expenses)
+        // Calculate and display net balance
         val netBalance = totalIncome - totalExpenses
         netBalanceTextView.text = "Net Balance: £${"%.2f".format(netBalance)}"
     }
@@ -174,7 +179,6 @@ class SummaryActivity : AppCompatActivity() {
         incomeList.forEach {
             allYears.add(it.date.split("-")[0]) // Extract and add the year part of the date
         }
-
         // Return the sorted list of unique years
         return allYears.sorted().toList()
     }

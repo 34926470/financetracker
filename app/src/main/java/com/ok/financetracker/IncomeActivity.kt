@@ -50,7 +50,7 @@ class IncomeActivity : AppCompatActivity() {
         selectDateButton = findViewById(R.id.select_date_button)
 
         // Initialize SharedPreferences to store income data
-        sharedPreferences = getSharedPreferences("income_prefs", MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("finance_prefs", MODE_PRIVATE)
 
         // Load previously saved incomes from SharedPreferences
         loadIncomes()
@@ -127,6 +127,9 @@ class IncomeActivity : AppCompatActivity() {
         val gson = Gson()
         val incomesJson = gson.toJson(incomeList)
         sharedPreferences.edit().putString(incomeKey, incomesJson).apply()
+
+        // Log the incomes being saved
+        println("Saved Incomes: $incomeList")
     }
 
     // Function to load the list of incomes from SharedPreferences
@@ -138,14 +141,21 @@ class IncomeActivity : AppCompatActivity() {
             val type = object : TypeToken<List<Income>>() {}.type
             val savedIncomes: List<Income> = gson.fromJson(incomesJson, type)
             incomeList.addAll(savedIncomes)
+
+            // Log each income and its date
+            incomeList.forEach {
+                println("Income: ${it.name}, Date: ${it.date}")
+            }
         }
     }
 
-    // Function to remove an income from the list and update the RecyclerView
+    // Function to remove an income from the list
     @SuppressLint("NotifyDataSetChanged")
     private fun removeIncome(position: Int) {
         incomeList.removeAt(position)
         incomeAdapter.notifyDataSetChanged()
-        saveIncomes() // Save the updated list of incomes
+
+        // Save the updated list after removal
+        saveIncomes()
     }
 }
