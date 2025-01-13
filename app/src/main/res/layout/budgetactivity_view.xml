@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -8,14 +9,16 @@
     <Spinner
         android:id="@+id/month_spinner"
         android:layout_width="383dp"
-        android:layout_height="34dp" />
+        android:layout_height="34dp"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <!-- Spinner for selecting year -->
     <Spinner
         android:id="@+id/year_spinner"
         android:layout_width="383dp"
         android:layout_height="42dp"
-        android:layout_below="@id/month_spinner" />
+        android:layout_below="@id/month_spinner"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <!-- RecyclerView for budgets -->
     <androidx.recyclerview.widget.RecyclerView

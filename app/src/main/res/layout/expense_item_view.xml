@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- LinearLayout container for displaying expense details -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -9,6 +11,7 @@
     android:elevation="2dp"
     android:layout_marginBottom="8dp">
 
+    <!-- TextView for displaying the expense name -->
     <TextView
         android:id="@+id/expense_name"
         android:layout_width="wrap_content"
@@ -16,29 +19,36 @@
         android:text="Name: Example"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        tools:ignore="HardcodedText" />
 
+    <!-- TextView for displaying the expense price -->
     <TextView
         android:id="@+id/expense_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Price: $0.00"
         android:textSize="14sp"
-        android:textColor="#555555"/>
+        android:textColor="#555555"
+        tools:ignore="HardcodedText" />
 
+    <!-- TextView for displaying the expense category -->
     <TextView
         android:id="@+id/expense_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Category: Example"
         android:textSize="14sp"
-        android:textColor="#555555"/>
+        android:textColor="#555555"
+        tools:ignore="HardcodedText" />
 
+    <!-- TextView for displaying the expense date -->
     <TextView
         android:id="@+id/expense_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Date: YYYY-MM-DD"
         android:textSize="14sp"
-        android:textColor="#555555"/>
+        android:textColor="#555555"
+        tools:ignore="HardcodedText" />
 </LinearLayout>

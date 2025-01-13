@@ -1,9 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp">
 
+    <!-- Button for editing budgets -->
     <Button
         android:id="@+id/budget_button"
         android:layout_width="match_parent"
@@ -13,8 +15,10 @@
         android:layout_marginBottom="10dp"
         android:background="@color/colorPrimary"
         android:text="Edit Budgets"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText,VisualLintButtonSize" />
 
+    <!-- Button for adding expenses -->
     <Button
         android:id="@+id/expense_button"
         android:layout_width="match_parent"
@@ -24,8 +28,10 @@
         android:layout_marginBottom="10dp"
         android:background="@color/colorPrimary"
         android:text="Add Expense"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText,VisualLintButtonSize" />
 
+    <!-- Button for adding income -->
     <Button
         android:id="@+id/income_button"
         android:layout_width="match_parent"
@@ -35,8 +41,10 @@
         android:layout_marginBottom="10dp"
         android:background="@color/colorPrimary"
         android:text="Add Income"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText,VisualLintButtonSize" />
 
+    <!-- Button for showing the summary -->
     <Button
         android:id="@+id/summary_button"
         android:layout_width="match_parent"
@@ -46,6 +54,7 @@
         android:layout_marginBottom="10dp"
         android:background="@color/colorPrimary"
         android:text="Show Summary"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText,VisualLintButtonSize" />
 
 </LinearLayout>

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"> <!-- LinearLayout to arrange the TextViews vertically with padding -->
 
+    <!-- TextView for displaying the income name -->
     <TextView
         android:id="@+id/income_name"
         android:layout_width="wrap_content"
@@ -12,26 +14,33 @@
         android:text="Income Name"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        tools:ignore="HardcodedText" />
 
+    <!-- TextView for displaying the income amount -->
     <TextView
         android:id="@+id/income_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Amount"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:ignore="HardcodedText" />
 
+    <!-- TextView for displaying the income category -->
     <TextView
         android:id="@+id/income_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Category"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:ignore="HardcodedText" />
 
+    <!-- TextView for displaying the income date -->
     <TextView
         android:id="@+id/income_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Date"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:ignore="HardcodedText" />
 </LinearLayout>
